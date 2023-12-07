@@ -1,32 +1,35 @@
 import sha256 from "./sha256";
 
-const input = {
-  largeSafePrime: `
-    AC6BDB41 324A9A9B F166DE5E 1389582F AF72B665 1987EE07 FC319294
-    3DB56050 A37329CB B4A099ED 8193E075 7767A13D D52312AB 4B03310D
-    CD7F48A9 DA04FD50 E8083969 EDB767B0 CF609517 9A163AB3 661A05FB
-    D5FAAAE8 2918A996 2F0B93B8 55F97993 EC975EEA A80D740A DBF4FF74
-    7359D041 D5C33EA7 1D281E44 6B14773B CA97B43A 23FB8016 76BD207A
-    436C6481 F1D2B907 8717461A 5B9D32E6 88F87748 544523B5 24B0D57D
-    5EA77A27 75D2ECFA 032CFBDB F52FB378 61602790 04E57AE6 AF874E73
-    03CE5329 9CCC041C 7BC308D8 2A5698F3 A8D0C382 71AE35F8 E9DBFBB6
-    94B5C803 D89F7AE4 35DE236D 525F5475 9B65E372 FCD68EF2 0FA7111F
-    9E4AFF73
-  `,
-  generatorModulo: "02",
-  hashFunction: "sha256",
-  hashOutputBytes: 256 / 8,
+export interface Params {
+  N: bigint;
+  g: bigint;
+  k: bigint;
+  H: typeof sha256;
+  hashOutputBytes: number;
+}
+
+export const buildParams = (
+  prime: bigint,
+  mudulo: bigint,
+  hashFunction: typeof sha256,
+  hashOutputBytes: number
+): Params => {
+  return {
+    N: prime,
+    g: mudulo,
+    k: hashFunction(prime, mudulo),
+    H: hashFunction,
+    hashOutputBytes,
+  };
 };
 
-// N    A large safe prime (N = 2q+1, where q is prime)
-// g    A generator modulo N
-// k    Multiplier parameter (k = H(N, g) in SRP-6a, k = 3 for legacy SRP-6)
-// H()  One-way hash function
-export const N = BigInt("0x" + input.largeSafePrime.replace(/\s+/g, ""));
-export const g = BigInt("0x" + input.generatorModulo.replace(/\s+/g, ""));
-export const k = sha256(N, g);
-export const H = sha256;
+export const defaults = buildParams(
+  BigInt(
+    `0xAC6BDB41324A9A9BF166DE5E1389582FAF72B6651987EE07FC3192943DB56050A37329CBB4A099ED8193E0757767A13DD52312AB4B03310DCD7F48A9DA04FD50E8083969EDB767B0CF6095179A163AB3661A05FBD5FAAAE82918A9962F0B93B855F97993EC975EEAA80D740ADBF4FF747359D041D5C33EA71D281E446B14773BCA97B43A23FB801676BD207A436C6481F1D2B9078717461A5B9D32E688F87748544523B524B0D57D5EA77A2775D2ECFA032CFBDBF52FB3786160279004E57AE6AF874E7303CE53299CCC041C7BC308D82A5698F3A8D0C38271AE35F8E9DBFBB694B5C803D89F7AE435DE236D525F54759B65E372FCD68EF20FA7111F9E4AFF73`
+  ),
+  BigInt("0x02"),
+  sha256,
+  256 / 8
+);
 
-export const hashOutputBytes = input.hashOutputBytes;
-
-export default input;
+export default buildParams;

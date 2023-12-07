@@ -1,10 +1,14 @@
-import * as client from "./client";
-import * as server from "./server";
+import srpclient from "./client";
+import { defaults } from "./lib/params";
+import srpserver from "./server";
 
 describe("Secure Remote Password", () => {
   it("should authenticate a user", () => {
     const username = "linus@folkdatorn.se";
     const password = "$uper$ecure";
+
+    const client = srpclient(defaults);
+    const server = srpserver(defaults);
 
     const salt = client.generateSalt();
     const privateKey = client.derivePrivateKey(salt, username, password);

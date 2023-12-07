@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "license": "MIT",
   "repository": "Joey92/secure-remote-password",
+  "type": "module",
   "scripts": {
     "test": "jest"
   },
